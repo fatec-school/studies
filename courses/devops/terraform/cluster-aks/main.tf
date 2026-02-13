@@ -30,9 +30,9 @@ resource "azurerm_kubernetes_cluster" "aks" {
 }
 
 resource "azurerm_public_ip" "ingress_ip" {
-  name = "MyAksPublicIpForIngress"
-  location = var.location
+  name                = "MyAksPublicIpForIngress"
+  location            = var.location
   resource_group_name = data.azurerm_kubernetes_cluster.aks_data.node_resource_group
-  allocation_method = "Static"
-  sku = "Standard"
+  allocation_method   = "Static"
+  sku                 = "Standard"
 }
