@@ -1,0 +1,55 @@
+---
+- name: Install Docker
+  hosts: targets
+  become: true
+
+  tasks:
+    - name: Update packages
+      apt:
+        update_cache: yes
+
+    - name: Install docker dependencies
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - software-properties-common
+        state: present
+
+    - name: Add GPG docker key
+      shell: curl -fsSL https://download.docker.com/linuix/ubuntu/gpg | apt-key add -
+
+    - name: Add docker repository
+      shell: add-apt-repositoy "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable"
+
+    - name: Update packages again
+      apt:
+        update_cache: yes
+    
+    - name: Install Docker
+      apt:
+        name:
+          - docker-ce
+        state: present
+
+    - name: Enable and start docker service
+      systemd:
+        name: docker
+        enabled: yes
+        state: started
+
+    - name: Pip install to Python3
+      apt:
+        name: python3-pip
+        state: present
+
+    - name: Install docker sdk to python
+      pip:
+        name: docker
+
+    - name: Add user to docker group
+      user:
+        name: "{{ ansible_user }}"
+        groups: docker
+
