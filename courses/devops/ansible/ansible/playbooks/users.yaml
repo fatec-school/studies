@@ -1,0 +1,29 @@
+---
+- name: Create users and permissions
+  hosts: targets
+  become: true
+
+  tasks:
+    - name: Create user
+      user:
+        name: devops
+        password: "{{ 'Senha123$' | password_hash('sha512') }}"
+        shell: /bin/bash
+        append: yes
+        state: present
+
+    - name: Create application directory
+      file:
+        path: /opt/app
+        state: directory
+        owner: devops
+        group: devops
+        mode: '0755'
+    
+    - name: Create logs directory
+      file:
+        path: /opt/logs
+        state: directory
+        owner: devops
+        group: devops
+        mode: '0755'
