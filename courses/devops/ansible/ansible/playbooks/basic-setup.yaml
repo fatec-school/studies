@@ -1,0 +1,17 @@
+---
+- name: Config Vm with basic packages
+  hosts: targets
+  become: true # To execute as a sudo
+
+  tasks:
+    - name: Update package list
+      apt:
+        update_cache: yes
+
+    - name: Instal useful packages
+      apt:
+        name:
+          - htop
+          - curl
+          - git
+        state: present

@@ -1,0 +1,13 @@
+---
+- name: Update and Upgrade packages
+  hosts: targets
+  become: true
+
+  tasks:
+    - name: Update packages
+      apt:
+        update_cache: yes
+
+    - name: Upgrade server
+      apt:
+        upgrade: yes
