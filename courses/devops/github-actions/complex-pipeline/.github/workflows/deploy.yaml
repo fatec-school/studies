@@ -37,3 +37,77 @@ jobs:
                   terraform fmt --check
                   terraform validate
                   terraform plan -out=tfplan
+
+    deploy:
+        if: ${{ github.event.inputs.destroy == 'false' }}
+        name: Deploy terraform
+        needs: validate
+        runs-on: ubuntu-latest
+        outputs:
+            vmName: ${{ steps.output_vm.outputs.vmName }}
+            adminUsername: ${{ steps.output_vm.outputs.adminUsername }}
+            publicIp: ${{ steps.output_vm.outputs.publicIp }}
+            nsg: ${{ steps.output_vm.outputs.nsg }}
+            resourceGroup: ${{ steps.output_vm.outputs.resourceGroup }}
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v3
+
+            - name: Azure Login
+              uses: azure/login@v2
+              with:
+                  creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+            - name: Terraform apply
+              working-directory: infra
+              run: |
+                  export ARM_SUBSCRIPTION_ID=${{ secrets.ARM_SUBSCRIPTION_ID }}
+                  terraform init
+                  terraform apply -auto-approve tfplan
+
+            - name: Output VM details
+              id: output_vm
+              working-directory: infra
+              run: |
+                  echo "vmName=vm-automation" >> $GITHUB_OUTPUT
+                  echo "adminUsername=azureuser" >> $GITHUB_OUTPUT
+                  echo "publicIp=$(terraform output -raw public_ip_address)" >> $GITHUB_OUTPUT
+                  echo "nsg=$(terraform output -raw nsg_name)" >> $GITHUB_OUTPUT
+                  echo "resourceGroup=$(terraform output -raw resource_group)" >> $GITHUB_OUTPUT
+
+            - name: Define Env
+              run: |
+                  echo "VM_NAME=vm-automation" >> $GITHUB_ENV
+                  echo "ADMIN_USERNAME=azureuser" >> $GITHUB_ENV
+                  echo "PUBLIC_IP=${{ steps.output_vm.outputs.publicIp }}" >> $GITHUB_ENV
+                  echo "SSH_COMMAND"="ssh azureuser@${{ steps.output_vm.outputs.publicIp }}" >> $GITHUB_ENV
+
+            - name: Install Ansible
+              run: |
+                  sudo apt update
+                  sudo apt install -y ansible sshpass
+
+            - name: Create hosts file
+              run: |
+                  echo "[azure_vm]" > hosts
+                  echo "${{ env.PUBLIC_IP }} ansible_user=${{ env.ADMIN_USERNAME }} ansible_password=${{ secrets.ANSIBLE_PASSWORD }} ansible_ssh_common_args='-o StrictHostKeyChecking=no'" >> hosts
+
+            - name: Run Ansible playbook
+              run: |
+                  ansible-playbook -i hosts ansible/playbook.yaml --extra-vars "ansible_sudo_pass=${{ secrets.ANSIBLE_PASSWORD }}"
+
+    post-tests:
+        if: ${{ github.event.inputs.destroy == 'false' }}
+        name: Post deployment tests
+        needs: deploy
+        runs-on: ubuntu-latest
+        env:
+            PUBLIC_IP: ${{ needs.deploy.outputs.publicIp }}
+            VM_NAME: ${{ needs.deploy.outputs.vmName }}
+            NSG_NAME: ${{ needs.deploy.outputs.nsg }}
+            RESOURCE_GROUP: ${{ needs.deploy.outputs.resourceGroup }}
+        steps:
+            - name: Azure Login
+              uses: azure/login@v2
+              with:
+                  creds: ${{ secrets.AZURE_CREDENTIALS }}
