@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: java-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:  
+      app: java-app
+  template:
+    metadata:
+      labels:
+        app: java-app
+    spec:
+      containers:
+        - name: java-container
+          image: iesodias/java-api:latest
+          ports:
+            - containerPort: 8081
+          resources:
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: java-service
+spec:
+  selector:
+    app: java-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8081
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: java-ingress
+  namespace: default
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: java-api.172.0.1.nip.io
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: java-service
+                port:
+                  number: 80

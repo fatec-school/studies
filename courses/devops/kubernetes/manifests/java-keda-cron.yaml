@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: java-deployment
+  labels:
+    app: java-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: java-app
+  template:
+    metadata:
+      labels:
+        app: java-app
+    spec:
+      containers:
+        - name: java-app
+          image: iesodias/java-api:latest
+          ports:
+            - containerPort: 8081
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8081
+            initialDelaySeconds: 20
+            periodSeconds: 5
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+            requests:
+              cpu: "250m"
+              memory: "256Mi"
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: java-service
+spec:
+  selector:
+    app: java-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8081
+
+---
+
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: java-scaledobject
+spec:
+  scaleTargetRef:
+    name: java-deployment
+  minReplicaCount: 0
+  maxReplicaCount: 5
+  cooldownPeriod: 30
+  triggers:
+    - type: cron
+      metadata:
+        timezone: "UTC"
+        start: "30 19 * * *" # 19:30 UTC (20:30 CET)
+        end: "33 19 * * *" # 19:33 UTC (20:33 CET)
+        desiredReplicas: "2"
