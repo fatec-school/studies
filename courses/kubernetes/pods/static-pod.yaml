@@ -1,0 +1,11 @@
+# Deve ser colocado dentro de /etc/kubernetes/manifests/
+apiVersion: v1
+kind: Pod
+metadata:
+  name: static-pod
+spec:
+  containers:
+    - name: static-pod
+      image: nginx
+      ports:
+        - containerPort: 80

@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: lifecycle-pod
+spec:
+  terminationGracePeriodSeconds: 60
+  containers:
+    - name: alpine
+      image: alpine
+      command:
+        - sleep
+        - "9999999"
+      lifecycle:
+        preStop:
+          exec:
+            command: ["sh", "-c", "curl 10.244.2.28"]
