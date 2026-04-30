@@ -22,4 +22,8 @@ func (p Person) GetAge() int {
 	actualYear := time.Now().Year()
 
 	return actualYear - birthYear
-} 
+}
+
+func (p *Person) ChangeName(newName string) {
+	p.Name = newName
+}

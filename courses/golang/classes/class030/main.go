@@ -23,5 +23,9 @@ func main() {
 
 	fmt.Printf("Person: %+v\n", person)
 	//fmt.Printf("Age: %d", model.GetAge(person))
-	fmt.Printf("Age: %d", person.GetAge())
+	fmt.Printf("Age: %d\n", person.GetAge())
+
+	fmt.Printf("Name: %s\n", person.Name)
+	person.ChangeName("Mick")
+	fmt.Printf("New name: %s\n", person.Name)
 }
