@@ -6,3 +6,4 @@ type Address struct {
 	Number int
 	City   string
 }
+

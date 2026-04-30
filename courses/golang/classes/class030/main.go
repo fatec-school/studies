@@ -3,6 +3,7 @@ package main
 import (
 	"aula30/model"
 	"fmt"
+	"time"
 )
 
 func main() {
@@ -14,5 +15,13 @@ func main() {
 		City:   "Anytown",
 	}
 
-	fmt.Printf("Address: %+v\n", address)
+	person := model.Person{
+		Name:    "John Doe",
+		Address: address,
+		BirthDate: time.Date(2000, 1, 1, 0, 0, 0, 0, time.Local),
+	}
+
+	fmt.Printf("Person: %+v\n", person)
+	//fmt.Printf("Age: %d", model.GetAge(person))
+	fmt.Printf("Age: %d", person.GetAge())
 }
