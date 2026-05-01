@@ -1,6 +1,7 @@
 package main
 
 import (
+	"ex03/model"
 	"fmt"
 	"time"
 )
@@ -8,15 +9,15 @@ import (
 func main() {
 	fmt.Println("starting...")
 
-	shoppingList := shoppingList{
+	shoppingList := model.ShoppingList{
 		BuyDate: time.Date(2026, 1, 1, 1, 0, 0, 0, time.Local),
 		Market:  "Market XPTO",
-		Items: []item{
-			item{
+		Items: []model.Item{
+			model.Item{
 				Name:  "Item 1",
 				Price: 99,
 			},
-			item{
+			model.Item{
 				Name:  "Item 2",
 				Price: 123,
 			},
