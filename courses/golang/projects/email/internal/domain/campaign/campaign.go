@@ -1,6 +1,10 @@
 package campaign
 
-import "time"
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
 
 type Contact struct {
 	Email string
@@ -21,7 +25,7 @@ func NewCampaign(name string, content string, emails []string) *Campaign {
 	}
 
 	return &Campaign{
-		ID:        "1",
+		ID:        uuid.NewString(),
 		Name:      name,
 		Content:   content,
 		Contacts:  contacts,
