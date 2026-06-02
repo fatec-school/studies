@@ -2,6 +2,7 @@ package service
 
 import (
 	"email/internal/adapter/dto"
+	internalerror "email/internal/domain/campaign/internal-error"
 	"email/internal/domain/campaign/model"
 	"email/internal/domain/campaign/repository"
 )
@@ -20,7 +21,7 @@ func (s *Service) Create(request *dto.NewCampaignRequest) (string, error) {
 
 	err = s.Repository.Save(campaign)
 	if err != nil {
-		return "", err
+		return "", internalerror.ErrInternalError
 	}
 
 	return campaign.ID, nil

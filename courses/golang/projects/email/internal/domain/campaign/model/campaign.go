@@ -1,33 +1,24 @@
 package model
 
 import (
-	"errors"
 	"time"
 
 	"github.com/google/uuid"
 )
 
 type Contact struct {
-	Email string
+	Email string `validate:"required,email"`
 }
 
 type Campaign struct {
-	ID        string
-	Name      string
-	CreatedAt time.Time
-	Content   string
-	Contacts  []Contact
+	ID        string    `validate:"required"`
+	Name      string    `validate:"required,min=5,max=24"`
+	CreatedAt time.Time `validate:"required"`
+	Content   string    `validate:"required,min=5,max=500"`
+	Contacts  []Contact `validate:"required,min=1"`
 }
 
 func NewCampaign(name string, content string, emails []string) (*Campaign, error) {
-
-	if name == "" {
-		return nil, errors.New("name is required")
-	} else if content == "" {
-		return nil, errors.New("content is required")
-	} else if len(emails) == 0 {
-		return nil, errors.New("contact is required")
-	}
 
 	contacts := make([]Contact, len(emails))
 	for i, email := range emails {

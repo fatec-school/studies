@@ -2,6 +2,7 @@ package service
 
 import (
 	"email/internal/adapter/dto"
+	"email/internal/domain/campaign/internal-error"
 	"email/internal/domain/campaign/model"
 	"errors"
 	"testing"
@@ -107,5 +108,5 @@ func Test_Create_ValidateRepositoryError(t *testing.T) {
 
 	_, err := service.Create(&newCampaign)
 
-	assert.Equal("error to save on database", err.Error())
+	assert.True(errors.Is(err, internalerror.ErrInternalError))
 }
