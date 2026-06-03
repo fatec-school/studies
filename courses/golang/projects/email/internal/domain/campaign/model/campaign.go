@@ -1,6 +1,7 @@
 package model
 
 import (
+	internalerror "email/internal/domain/campaign/internal-error"
 	"time"
 
 	"github.com/google/uuid"
@@ -15,7 +16,7 @@ type Campaign struct {
 	Name      string    `validate:"required,min=5,max=24"`
 	CreatedAt time.Time `validate:"required"`
 	Content   string    `validate:"required,min=5,max=500"`
-	Contacts  []Contact `validate:"required,min=1"`
+	Contacts  []Contact `validate:"required,min=1,dive"` // dive is used to validate each element in the slice
 }
 
 func NewCampaign(name string, content string, emails []string) (*Campaign, error) {
@@ -25,11 +26,25 @@ func NewCampaign(name string, content string, emails []string) (*Campaign, error
 		contacts[i].Email = email
 	}
 
-	return &Campaign{
+	campaign := &Campaign{
 		ID:        uuid.NewString(),
+		CreatedAt: time.Now(),
 		Name:      name,
 		Content:   content,
 		Contacts:  contacts,
-		CreatedAt: time.Now(),
-	}, nil
+	}
+
+	println("campaign: ", campaign)
+
+	validationErr := internalerror.ValidateStruct(&Campaign{
+		Name:     name,
+		Content:  content,
+		Contacts: contacts,
+	})
+
+	if validationErr != nil {
+		return nil, validationErr
+	}
+
+	return campaign, nil
 }
