@@ -4,13 +4,15 @@ import (
 	"testing"
 	"time"
 
+	"github.com/jaswdr/faker/v2"
 	"github.com/stretchr/testify/assert"
 )
 
 var (
 	name     = "Campaign x"
-	content  = "value"
+	content  = "values for campaign x"
 	contacts = []string{"email@email.com", "email2@email.com"}
+	fake    = faker.New()
 )
 
 func Test_NewCampaign_Create(t *testing.T) {
@@ -50,7 +52,7 @@ func Test_NewCampaign_CreatedAtIsGreaterThanNow(t *testing.T) {
 	assert.Greater(campaign.CreatedAt, now)
 }
 
-func Test_NewCampaign_MustValidateName(t *testing.T) {
+func Test_NewCampaign_NameIsRequired(t *testing.T) {
 	assert := assert.New(t)
 
 	_, err := NewCampaign("", content, contacts)
@@ -58,7 +60,23 @@ func Test_NewCampaign_MustValidateName(t *testing.T) {
 	assert.Equal("name is required", err.Error())
 }
 
-func Test_NewCampaign_MustValidateContent(t *testing.T) {
+func Test_NewCampaign_NameMustBeGreaterThan5Characters(t *testing.T) {
+	assert := assert.New(t)
+
+	_, err := NewCampaign("x", content, contacts)
+
+	assert.Equal("name must be at least 5 characters long", err.Error())
+}
+
+func Test_NewCampaign_NameMustBeLessThan24Characters(t *testing.T) {
+	assert := assert.New(t)
+
+	_, err := NewCampaign(fake.Lorem().Text(124), content, contacts)
+
+	assert.Equal("name must be at most 24 characters long", err.Error())
+}
+
+func Test_NewCampaign_ContentIsRequired(t *testing.T) {
 	assert := assert.New(t)
 
 	_, err := NewCampaign(name, "", contacts)
@@ -66,10 +84,34 @@ func Test_NewCampaign_MustValidateContent(t *testing.T) {
 	assert.Equal("content is required", err.Error())
 }
 
+func Test_NewCampaign_ContentMustBeGreaterThan5Characters(t *testing.T) {
+	assert := assert.New(t)
+
+	_, err := NewCampaign(name, "x", contacts)
+	assert.Equal("content must be at least 5 characters long", err.Error())
+}
+
+func Test_NewCampaign_ContentMustBeLessThan500Characters(t *testing.T) {
+	assert := assert.New(t)
+	longContent := fake.Lorem().Text(510)
+
+	_, err := NewCampaign(name, longContent, contacts)
+
+	assert.Equal("content must be at most 500 characters long", err.Error())
+}
+
 func Test_NewCampaign_MustValidateContacts(t *testing.T) {
 	assert := assert.New(t)
 
 	_, err := NewCampaign(name, content, []string{})
 
-	assert.Equal("contact is required", err.Error())
+	assert.Equal("contacts must be at least 1 characters long", err.Error())
+}
+
+func Test_NewCampaign_MustValidateContactsEmail(t *testing.T) {
+	assert := assert.New(t)
+
+	_, err := NewCampaign(name, content, []string{"invalid-email"})
+
+	assert.Equal("email must be a valid email", err.Error())
 }

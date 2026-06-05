@@ -34,13 +34,7 @@ func NewCampaign(name string, content string, emails []string) (*Campaign, error
 		Contacts:  contacts,
 	}
 
-	println("campaign: ", campaign)
-
-	validationErr := internalerror.ValidateStruct(&Campaign{
-		Name:     name,
-		Content:  content,
-		Contacts: contacts,
-	})
+	validationErr := internalerror.ValidateStruct(campaign)
 
 	if validationErr != nil {
 		return nil, validationErr
