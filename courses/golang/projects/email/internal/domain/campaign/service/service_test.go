@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	name    = "test"
+	name    = "test completed"
 	content = "content"
 	emails  = []string{"email1@email.com", "email2@email.com"}
 )
