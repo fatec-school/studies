@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -10,7 +11,11 @@ func main() {
 	r := chi.NewRouter()
 
 	r.Get("/health", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("status ok"))
+		status := map[string]string{"status": "ok"}
+		w.Header().Set("Content-Type", "application/json")
+
+		resp, _ := json.Marshal(status)
+		w.Write(resp)
 	})
 
 	// Path param
