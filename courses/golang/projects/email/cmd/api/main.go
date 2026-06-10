@@ -2,10 +2,16 @@ package main
 
 import (
 	"encoding/json"
+	"io"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
 )
+
+type product struct {
+	ID   int
+	Name string
+}
 
 func main() {
 	r := chi.NewRouter()
@@ -33,6 +39,21 @@ func main() {
 			w.Write([]byte("hello"))
 		}
 
+	})
+
+	r.Post("/", func(w http.ResponseWriter, r *http.Request) {
+		var product product
+		request, err := io.ReadAll(r.Body)
+		if err != nil {
+			w.Write([]byte("erro ao ler corpo da request"))
+			return
+		}
+
+		err = json.Unmarshal(request, &product)
+		if err != nil {
+			w.Write([]byte("erro ao deserializar json"))
+			return
+		}
 	})
 
 	http.ListenAndServe(":8080", r)
