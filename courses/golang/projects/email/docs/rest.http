@@ -9,5 +9,6 @@ GET http://localhost:8080/health
 POST http://localhost:8080/
 
 {
-    "name": "mouse",
+    "id": 1,
+    "name": "mouse"
 }

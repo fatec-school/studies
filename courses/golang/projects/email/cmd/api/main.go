@@ -54,6 +54,8 @@ func main() {
 			w.Write([]byte("erro ao deserializar json"))
 			return
 		}
+
+		w.Write([]byte(product.Name))
 	})
 
 	http.ListenAndServe(":8080", r)
