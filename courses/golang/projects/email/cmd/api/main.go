@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 
@@ -15,6 +16,8 @@ type product struct {
 
 func main() {
 	r := chi.NewRouter()
+
+	r.Use(myMiddleware)
 
 	r.Get("/health", func(w http.ResponseWriter, r *http.Request) {
 		status := map[string]string{"status": "ok"}
@@ -59,4 +62,12 @@ func main() {
 	})
 
 	http.ListenAndServe(":8080", r)
+}
+
+func myMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println("before")
+		next.ServeHTTP(w, r)
+		fmt.Println("after")
+	})
 }
