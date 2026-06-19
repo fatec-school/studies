@@ -12,3 +12,10 @@ POST http://localhost:8080/
     "id": 1,
     "name": "mouse"
 }
+
+###
+
+POST http://localhost:9000/realms/course/protocol/openid-connect/token
+Content-Type: application/x-www-form-urlencoded
+
+client_id=email&client_secret={SECRET}&grant_type=client_credentials
