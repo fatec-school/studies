@@ -7,16 +7,26 @@ import (
 	"github.com/google/uuid"
 )
 
+type CampaignStatus string
+
+const (
+	CampaignStatusPending  CampaignStatus = "pending"
+	CampaignStatusApproved CampaignStatus = "approved"
+	CampaignStatusSent     CampaignStatus = "sent"
+	CampaignStatusFailed   CampaignStatus = "failed"
+)
+
 type Contact struct {
 	Email string `validate:"required,email"`
 }
 
 type Campaign struct {
-	ID        string    `validate:"required"`
-	Name      string    `validate:"required,min=5,max=24"`
-	CreatedAt time.Time `validate:"required"`
-	Content   string    `validate:"required,min=5,max=500"`
-	Contacts  []Contact `validate:"required,min=1,dive"` // dive is used to validate each element in the slice
+	ID        string         `validate:"required"`
+	Name      string         `validate:"required,min=5,max=24"`
+	CreatedAt time.Time      `validate:"required"`
+	Content   string         `validate:"required,min=5,max=500"`
+	Status    CampaignStatus `validate:"required"`
+	Contacts  []Contact      `validate:"required,min=1,dive"` // dive is used to validate each element in the slice
 }
 
 func NewCampaign(name string, content string, emails []string) (*Campaign, error) {
@@ -32,6 +42,7 @@ func NewCampaign(name string, content string, emails []string) (*Campaign, error
 		Name:      name,
 		Content:   content,
 		Contacts:  contacts,
+		Status:    CampaignStatusPending,
 	}
 
 	validationErr := internalerror.ValidateStruct(campaign)

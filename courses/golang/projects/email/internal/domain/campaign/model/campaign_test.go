@@ -12,7 +12,7 @@ var (
 	name     = "Campaign x"
 	content  = "values for campaign x"
 	contacts = []string{"email@email.com", "email2@email.com"}
-	fake    = faker.New()
+	fake     = faker.New()
 )
 
 func Test_NewCampaign_Create(t *testing.T) {
@@ -114,4 +114,12 @@ func Test_NewCampaign_MustValidateContactsEmail(t *testing.T) {
 	_, err := NewCampaign(name, content, []string{"invalid-email"})
 
 	assert.Equal("email must be a valid email", err.Error())
+}
+
+func Test_NewCampaign_StatusMustBePending(t *testing.T) {
+	assert := assert.New(t)
+
+	campaign, _ := NewCampaign(name, content, contacts)
+
+	assert.Equal(CampaignStatusPending, campaign.Status)
 }
