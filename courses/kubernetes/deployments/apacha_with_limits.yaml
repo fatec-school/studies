@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: apache-with-limits
+  name: apache-with-limits
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: apache-with-limits
+  template:
+    metadata:
+      labels:
+        app: apache-with-limits
+    spec:
+      containers:
+        - image: httpd
+          name: httpd
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+            requests:
+              memory: "64Mi"
+              cpu: "250m"
