@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  labels:
+    app: nginx
+  name: nginx
+spec:
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      nodeSelector:
+        kubernetes.io/os: linux # Label selector to ensure the DaemonSet runs only on Linux nodes. Verify labs with `kubectl get nodes --show-labels`
+      containers:
+        - image: nginx
+          name: nginx
