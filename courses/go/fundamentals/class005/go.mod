@@ -1,0 +1,5 @@
+module class004
+
+go 1.27.1
+
+require github.com/badoux/checkmail v1.2.4 // indirect
