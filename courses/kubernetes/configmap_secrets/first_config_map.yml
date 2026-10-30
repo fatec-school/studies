@@ -1,0 +1,15 @@
+apiVersion: v1
+data:
+  key1: config1
+  key2: config2
+kind: ConfigMap
+metadata:
+  name: my-config
+---
+# Another example
+apiVersion: v1
+metadata:
+  name: test
+data:
+  virtual_host: "vhost1.localhost.com"
+kind: ConfigMap
