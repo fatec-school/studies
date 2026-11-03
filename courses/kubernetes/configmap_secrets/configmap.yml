@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metada:
+  name: nginx
+data:
+  data1: teste
+  vhost.conf: |
+    server {
+      listen 80;
+      listen [::]:80;
+
+      root /usr/share/nginx/app1;
+      index index.html index.htm index.nginx-debian.html;
+
+      server_name app.localhost.com www.app.localhost.co;
+
+      location / {
+        try files $uri $uri/ =404;
+      }
+    }
